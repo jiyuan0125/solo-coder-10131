@@ -6,6 +6,7 @@ from django.core.cache import cache
 from django.core.exceptions import ValidationError
 from django.core.validators import RegexValidator
 from django.db import models
+from django.db.models import Q, F
 from django.db.models.functions import Lower
 from django.urls import reverse
 from django.utils import formats, timezone
@@ -66,7 +67,16 @@ def validate_unique_period(queryset, model):
     if model.id:
         queryset = queryset.exclude(id=model.id)
     if model.start and model.end:
-        conflicting = queryset.filter(start__lt=model.end, end__gt=model.start).first()
+        base = Q(start__lte=model.end, end__gte=model.start)
+        model_is_instant = model.start == model.end
+        if not model_is_instant:
+            just_touch = (
+                Q(start=model.end) | Q(end=model.start)
+            ) & Q(start__lt=F("end"))
+            query = base & ~just_touch
+        else:
+            query = base
+        conflicting = queryset.filter(query).first()
         if conflicting:
             url = reverse(
                 f"core:{conflicting.model_name}-update",

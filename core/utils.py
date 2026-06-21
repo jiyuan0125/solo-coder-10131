@@ -147,7 +147,7 @@ def duration_string(duration, precision="s"):
                 % {"minutes": m}
             )
     if precision != "h" and precision != "m":
-        if s > 0 or parts:
+        if s > 0 or parts or precision == "s":
             if parts and parts[-1] != ", ":
                 parts.append(", ")
             parts.append(
