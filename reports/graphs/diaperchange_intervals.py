@@ -7,7 +7,7 @@ from django.utils.translation import get_language
 import plotly.offline as plotly
 import plotly.graph_objs as go
 
-from core.utils import duration_parts
+from core.utils import duration_to_hours, duration_string_short_hms
 
 from reports import utils
 
@@ -38,27 +38,27 @@ def diaperchange_intervals(changes):
         name=_("Solid"),
         line=dict(shape="spline"),
         x=list(changes.values_list("time", flat=True))[1:],
-        y=[i.total_seconds() / 3600 for i in intervals_solid],
+        y=[duration_to_hours(i) for i in intervals_solid],
         hoverinfo="text",
-        text=[_duration_string_hms(i) for i in intervals_solid],
+        text=[duration_string_short_hms(i) for i in intervals_solid],
     )
 
     trace_wet = go.Scatter(
         name=_("Wet"),
         line=dict(shape="spline"),
         x=list(changes.values_list("time", flat=True))[1:],
-        y=[i.total_seconds() / 3600 for i in intervals_wet],
+        y=[duration_to_hours(i) for i in intervals_wet],
         hoverinfo="text",
-        text=[_duration_string_hms(i) for i in intervals_wet],
+        text=[duration_string_short_hms(i) for i in intervals_wet],
     )
 
     trace_total = go.Scatter(
         name=_("Total"),
         line=dict(shape="spline"),
         x=list(changes.values_list("time", flat=True))[1:],
-        y=[i.total_seconds() / 3600 for i in intervals],
+        y=[duration_to_hours(i) for i in intervals],
         hoverinfo="text",
-        text=[_duration_string_hms(i) for i in intervals],
+        text=[duration_string_short_hms(i) for i in intervals],
     )
 
     layout_args = utils.default_graph_layout_options()
@@ -84,13 +84,3 @@ def diaperchange_intervals(changes):
         config={"locale": get_language()},
     )
     return utils.split_graph_output(output)
-
-
-def _duration_string_hms(duration):
-    """
-    Format a duration string with hours, minutes and seconds. This is
-    intended to fit better in smaller spaces on a graph.
-    :returns: a string of the form Xm.
-    """
-    h, m, s = duration_parts(duration)
-    return "{}h{}m{}s".format(h, m, s)

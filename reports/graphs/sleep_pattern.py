@@ -8,7 +8,7 @@ import plotly.offline as plotly
 import plotly.graph_objs as go
 import plotly.colors as colors
 
-from core.utils import duration_string
+from core.utils import duration_string, duration_to_minutes
 
 from reports import utils
 
@@ -90,7 +90,7 @@ def sleep_pattern(sleeps):
         # Asleep time.
         days[start_date].append(
             {
-                "time": duration.seconds / 60,
+                "time": duration_to_minutes(duration),
                 "label": _format_asleep_label(duration, start_time, end_time),
             }
         )
@@ -103,7 +103,7 @@ def sleep_pattern(sleeps):
             yesterday = end_time - timezone.timedelta(days=1)
             yesterday = yesterday.date().isoformat()
             days[yesterday][len(days[yesterday]) - 1] = {
-                "time": duration.seconds / 60,
+                "time": duration_to_minutes(duration),
                 "label": _format_asleep_label(duration, start_time, end_time),
             }
 
@@ -215,7 +215,7 @@ def _add_adjustment(adjustment, days):
     # Real adjustment entry.
     days[column].append(
         {
-            "time": adjustment["duration"].seconds / 60,
+            "time": duration_to_minutes(adjustment["duration"]),
             "label": _format_asleep_label(**adjustment),
         }
     )
@@ -224,7 +224,7 @@ def _add_adjustment(adjustment, days):
 def _awake_event(last_end_time, next_start_time):
     awake_duration = next_start_time - last_end_time
     return {
-        "time": awake_duration.seconds / 60,
+        "time": duration_to_minutes(awake_duration),
         "label": _format_awake_label(awake_duration, last_end_time, next_start_time),
     }
 

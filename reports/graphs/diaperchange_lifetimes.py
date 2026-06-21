@@ -4,6 +4,8 @@ from django.utils.translation import gettext as _
 import plotly.offline as plotly
 import plotly.graph_objs as go
 
+from core.utils import duration_to_hours
+
 from reports import utils
 
 
@@ -18,12 +20,12 @@ def diaperchange_lifetimes(changes):
     last_change = changes.first()
     for change in changes[1:]:
         duration = change.time - last_change.time
-        if duration.seconds > 0:
+        if duration.total_seconds() > 0:
             durations.append(duration)
         last_change = change
 
     trace = go.Box(
-        y=[round(d.seconds / 3600, 2) for d in durations],
+        y=[round(duration_to_hours(d), 2) for d in durations],
         name=_("Changes"),
         jitter=0.3,
         pointpos=-1.8,

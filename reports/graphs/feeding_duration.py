@@ -8,7 +8,7 @@ from django.utils.translation import gettext as _
 import plotly.offline as plotly
 import plotly.graph_objs as go
 
-from core.utils import duration_parts
+from core.utils import duration_to_minutes, duration_string_short_ms
 
 from reports import utils
 
@@ -40,9 +40,9 @@ def feeding_duration(instances):
         name=_("Average duration"),
         line=dict(shape="spline"),
         x=list(totals.values_list("date", flat=True)),
-        y=[td.seconds / 60 for td in averages],
+        y=[duration_to_minutes(td) for td in averages],
         hoverinfo="text",
-        text=[_duration_string_ms(td) for td in averages],
+        text=[duration_string_short_ms(td) for td in averages],
     )
     trace_count = go.Scatter(
         name=_("Total feedings"),
@@ -71,13 +71,3 @@ def feeding_duration(instances):
     )
     output = plotly.plot(fig, output_type="div", include_plotlyjs=False)
     return utils.split_graph_output(output)
-
-
-def _duration_string_ms(duration):
-    """
-    Format a "short" duration string with only minutes and seconds. This is
-    intended to fit better in smaller spaces on a graph.
-    :returns: a string of the form Xm.
-    """
-    h, m, s = duration_parts(duration)
-    return "{}m{}s".format(m, s)
