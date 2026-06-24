@@ -1,6 +1,41 @@
 # -*- coding: utf-8 -*-
 import time
 
+from core.utils import duration_parts
+
+
+def duration_string_hms(duration):
+    """
+    Format a duration string with hours, minutes and seconds.
+    Intended for compact display on graphs.
+    :returns: a string of the form XhYmZs.
+    """
+    h, m, s, _ = duration_parts(duration)
+    return "{}h{}m{}s".format(h, m, s)
+
+
+def duration_string_hm(duration):
+    """
+    Format a "short" duration string without seconds precision.
+    Intended to fit better in smaller spaces on a graph.
+    :returns: a string of the form XhXm.
+    """
+    h, m, _s, _ = duration_parts(duration)
+    return "{}h{}m".format(h, m)
+
+
+def duration_string_ms(duration, with_hours_if_needed=False):
+    """
+    Format a "short" duration string with minutes and seconds.
+    Intended to fit better in smaller spaces on a graph.
+    :param with_hours_if_needed: If True and hours > 0, include hours as XhYmZs.
+    :returns: a string of the form XmYs (or XhYmZs if with_hours_if_needed and h > 0).
+    """
+    h, m, s, _ = duration_parts(duration)
+    if with_hours_if_needed and h > 0:
+        return "{}h{}m{}s".format(h, m, s)
+    return "{}m{}s".format(m, s)
+
 
 def autorangeoptions(dates, padding=10000000):
     """

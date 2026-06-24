@@ -79,7 +79,7 @@ def feeding_pattern(feedings):
                 last_midnight = last_end_time.replace(hour=23, minute=59)
                 days[last_date].append(
                     {
-                        "time": (last_midnight - last_end_time).seconds / 60,
+                        "time": (last_midnight - last_end_time).total_seconds() / 60,
                         "label": None,
                         "method": None,
                     }
@@ -92,7 +92,7 @@ def feeding_pattern(feedings):
         # Not feeding time.
         days[start_date].append(
             {
-                "time": (start_time - last_end_time).seconds / 60,
+                "time": (start_time - last_end_time).total_seconds() / 60,
                 "label": None,
                 "method": None,
             }
@@ -101,7 +101,7 @@ def feeding_pattern(feedings):
         # Feeding time.
         days[start_date].append(
             {
-                "time": duration.seconds / 60,
+                "time": duration.total_seconds() / 60,
                 "label": _format_label(duration, start_time, end_time, feeding.method),
                 "method": feeding.method,
             }
@@ -115,7 +115,7 @@ def feeding_pattern(feedings):
             yesterday = end_time - timezone.timedelta(days=1)
             yesterday = yesterday.date().isoformat()
             days[yesterday][len(days[yesterday]) - 1] = {
-                "time": duration.seconds / 60,
+                "time": duration.total_seconds() / 60,
                 "label": _format_label(duration, start_time, end_time, feeding.method),
                 "method": feeding.method,
             }
@@ -226,7 +226,7 @@ def _add_adjustment(adjustment, days):
     # Real adjustment entry.
     days[column].append(
         {
-            "time": adjustment["duration"].seconds / 60,
+            "time": adjustment["duration"].total_seconds() / 60,
             "label": _format_label(**adjustment),
             "method": adjustment["method"],
         }

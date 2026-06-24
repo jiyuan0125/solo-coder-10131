@@ -38,7 +38,7 @@ def duration_string(duration, precision="s"):
         return ""
     try:
         return utils.duration_string(duration, precision)
-    except (ValueError, TypeError):
+    except TypeError:
         return ""
 
 
@@ -52,9 +52,9 @@ def hours(duration):
     if not duration:
         return 0
     try:
-        h, m, s = utils.duration_parts(duration)
+        h, _m, _s, _ = utils.duration_parts(duration)
         return h
-    except (ValueError, TypeError):
+    except TypeError:
         return 0
 
 
@@ -68,9 +68,9 @@ def minutes(duration):
     if not duration:
         return 0
     try:
-        h, m, s = utils.duration_parts(duration)
+        _h, m, _s, _ = utils.duration_parts(duration)
         return m
-    except (ValueError, TypeError):
+    except TypeError:
         return 0
 
 
@@ -84,9 +84,9 @@ def seconds(duration):
     if not duration:
         return 0
     try:
-        h, m, s = utils.duration_parts(duration)
+        _h, _m, s, _ = utils.duration_parts(duration)
         return s
-    except (ValueError, TypeError):
+    except TypeError:
         return 0
 
 

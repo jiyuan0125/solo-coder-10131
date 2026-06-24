@@ -19,7 +19,9 @@ class UtilsTestCase(TestCase):
 
     def test_duration_parts(self):
         duration = timezone.timedelta(hours=1, minutes=30, seconds=45)
-        self.assertEqual(utils.duration_parts(duration), (1, 30, 45))
+        self.assertEqual(utils.duration_parts(duration), (1, 30, 45, 0))
+        duration_us = timezone.timedelta(hours=1, minutes=30, seconds=45, microseconds=123456)
+        self.assertEqual(utils.duration_parts(duration_us), (1, 30, 45, 123456))
         self.assertRaises(TypeError, lambda: utils.duration_parts("1 hour"))
 
     def test_random_color(self):

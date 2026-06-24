@@ -6,8 +6,6 @@ from django.utils.translation import gettext as _
 import plotly.offline as plotly
 import plotly.graph_objs as go
 
-from core.utils import duration_parts
-
 from reports import utils
 
 
@@ -33,9 +31,9 @@ def tummytime_duration(instances):
     trace_avg = go.Bar(
         name=_("Total duration"),
         x=list(totals.values_list("date", flat=True)),
-        y=[td.seconds / 60 for td in sums],
+        y=[td.total_seconds() / 60 for td in sums],
         hoverinfo="text",
-        text=[_duration_string_ms(td) for td in sums],
+        text=[utils.duration_string_ms(td, with_hours_if_needed=True) for td in sums],
     )
     trace_count = go.Scatter(
         name=_("Number of sessions"),
@@ -66,16 +64,3 @@ def tummytime_duration(instances):
     )
     output = plotly.plot(fig, output_type="div", include_plotlyjs=False)
     return utils.split_graph_output(output)
-
-
-def _duration_string_ms(duration):
-    """
-    Format a "short" duration string with only minutes and seconds. This is
-    intended to fit better in smaller spaces on a graph.
-    :returns: a string of the form Xm.
-    """
-    h, m, s = duration_parts(duration)
-    if h > 0:
-        return "{}h{}m{}s".format(h, m, s)
-    else:
-        return "{}m{}s".format(m, s)

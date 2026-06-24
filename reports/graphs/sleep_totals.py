@@ -5,8 +5,6 @@ from django.utils.translation import gettext as _
 import plotly.offline as plotly
 import plotly.graph_objs as go
 
-from core.utils import duration_parts
-
 from reports import utils
 
 
@@ -47,10 +45,10 @@ def sleep_totals(instances):
     trace = go.Bar(
         name=_("Total sleep"),
         x=list(totals.keys()),
-        y=[td.seconds / 3600 for td in totals.values()],
+        y=[td.total_seconds() / 3600 for td in totals.values()],
         hoverinfo="text",
         textposition="outside",
-        text=[_duration_string_short(td) for td in totals.values()],
+        text=[utils.duration_string_hm(td) for td in totals.values()],
     )
 
     layout_args = utils.default_graph_layout_options()
@@ -66,13 +64,3 @@ def sleep_totals(instances):
     fig = go.Figure({"data": [trace], "layout": go.Layout(**layout_args)})
     output = plotly.plot(fig, output_type="div", include_plotlyjs=False)
     return utils.split_graph_output(output)
-
-
-def _duration_string_short(duration):
-    """
-    Format a "short" duration string without seconds precision. This is
-    intended to fit better in smaller spaces on a graph.
-    :returns: a string of the form XhXm.
-    """
-    h, m, s = duration_parts(duration)
-    return "{}h{}m".format(h, m)

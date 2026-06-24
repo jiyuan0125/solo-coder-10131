@@ -6,8 +6,6 @@ from django.utils.translation import gettext as _
 import plotly.offline as plotly
 import plotly.graph_objs as go
 
-from core.utils import duration_parts
-
 from reports import utils
 
 
@@ -34,7 +32,7 @@ def feeding_intervals(instances):
         x=list(totals.values_list("start", flat=True)),
         y=[i.total_seconds() / 3600 for i in intervals],
         hoverinfo="text",
-        text=[_duration_string_hms(i) for i in intervals],
+        text=[utils.duration_string_hms(i) for i in intervals],
     )
 
     layout_args = utils.default_graph_layout_options()
@@ -49,13 +47,3 @@ def feeding_intervals(instances):
     fig = go.Figure({"data": [trace_avg], "layout": go.Layout(**layout_args)})
     output = plotly.plot(fig, output_type="div", include_plotlyjs=False)
     return utils.split_graph_output(output)
-
-
-def _duration_string_hms(duration):
-    """
-    Format a duration string with hours, minutes and seconds. This is
-    intended to fit better in smaller spaces on a graph.
-    :returns: a string of the form Xm.
-    """
-    h, m, s = duration_parts(duration)
-    return "{}h{}m{}s".format(h, m, s)

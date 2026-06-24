@@ -876,7 +876,7 @@ def card_tummytime_day(context, child, date=None):
 
     stats = {"total": timezone.timedelta(seconds=0), "count": instances.count()}
     for instance in instances:
-        stats["total"] += timezone.timedelta(seconds=instance.duration.seconds)
+        stats["total"] += instance.duration
 
     return {
         "type": "tummytime",
